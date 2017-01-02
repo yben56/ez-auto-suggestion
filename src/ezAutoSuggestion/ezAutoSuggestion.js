@@ -42,12 +42,12 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 		this.choosen = selector + " li";
 			
 		//method	
-		this.getDatas();
+		this.getData();
 		this.hideList();	
 		this.choose();	
 	};
 
-	init.prototype.getDatas = function(){
+	init.prototype.getData = function(){
 		var self = this;
 
 		this.inputText.on('keyup', function(){
