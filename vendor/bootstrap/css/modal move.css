@@ -1,0 +1,3 @@
+/*Prevent content move to right when modal open*/
+.modal{overflow-y:auto;}
+.modal-open{overflow:auto;}

@@ -1,0 +1,25 @@
+<script type="text/javascript" src="vendor/jQuery/jquery-3.1.1.min.js"></script>
+<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" />
+<link href="https://fonts.googleapis.com/css?family=Heebo:100,300,500" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="css/main.css" />
+
+<script type="text/javascript" src="src/ezAutoSuggestion/ezAutoSuggestion.js"></script>
+<link rel="stylesheet" href="src/ezAutoSuggestion/ezAutoSuggestion.css" />
+
+<div class="container">
+	<div class="description row">
+        <span class="title">EZ AUTÖ SUGGESTiÖN</span><br />
+        <span>Ez Auto Suggestion is a simple javascript auto suggestion plugin.</span>
+        <p>This plugin required jQuery, Bootstrap & under MIT Licence.<br />(Backend data currently use random text for demo purpose.)</p>
+    </div>
+    <div class="row">
+        <div id="mySuggestion" class="ezAutoSuggestion"><input class="form-control" type="text" placeholder="ezAutoSuggestion" /></div>
+        <div id="yourSuggestion" class="ezAutoSuggestion"><input class="form-control" type="text" placeholder="ezAutoSuggestion" /></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+ezAutoSuggestion('#mySuggestion', 'data.php');
+ezAutoSuggestion('#yourSuggestion', 'data.php');
+</script>
+
