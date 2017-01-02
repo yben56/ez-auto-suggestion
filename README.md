@@ -2,7 +2,7 @@ Ez Auto Suggestion JS Plugin
 ==============================
 
 ##Demo
-https://yben56.github.io/ez-auto-suggestion/demo.html
+[DEMO](http://okprinting.com.au/EzAutoSuggestion/index.php)
 
 ##Dependencies
 jquery-3.1.1 & Bootstrap v3.3.6
