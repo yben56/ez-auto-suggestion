@@ -20,87 +20,92 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 	'use strict';
 	
 	var ezAutoSuggestion = function( selector, href ){
-		return new init(selector, href);
-	};
-	
-	var defaults = function(){
-		//Default property
-		this.wraper = $(".ezAutoSuggestion");
-		this.suggestionList = "<div class='suggestionList'><ul class='list-group'></ul></div>";	
+		new init(selector, href).addListItem().getData().choose().hideList();
 	};
 	
 	var init = function( selector, href ){
-	
-		defaults.call(this);
-		
+		var self = this;
+			
 		//property
 		this.element = $(selector);
 		this.href = href;
 		this.inputText = $(selector + " input[type='text']" );
-		this.inputText.after(this.suggestionList);
-		this.list = $(selector + " ul");
-		this.choosen = selector + " li";
-			
-		//method	
-		this.getData();
-		this.hideList();	
-		this.choose();	
-	};
-
-	init.prototype.getData = function(){
-		var self = this;
-
-		this.inputText.on('keyup', function(){
-			if (!this.value) {
-				self.element.css('overflow','hidden');
-			} else {
-
-				var inputData = this.value;
+		
+		if( typeof this.addListItem !== 'function' ){
+			init.prototype.addListItem = function(){
 				
-				$.post(self.href, { search: inputData } ).then(function(fromResolve){
+				this.inputText.after("<div class='suggestionList'><ul class='list-group'></ul></div>");
+				this.list = $(selector + " ul");
+				this.choosen = selector + " li";
 				
-					var fromResolve = $.parseJSON(fromResolve);
-					
-					var data = "";
-					for(var i = 0; i < fromResolve.length; i++ ) {
-						data += "<li class='list-group-item'>" + fromResolve[i] + "</li>";	
+				return self;
+			};
+		}
+		
+		//methods
+		if( typeof this.getData !== 'function' ){
+			init.prototype.getData = function(){
+		
+				this.inputText.on('keyup', function(){
+					if (!this.value) {
+						self.element.css('overflow','hidden');
+					} else {
+		
+						var inputData = this.value;
+						
+						$.post(self.href, { search: inputData } ).then(function(fromResolve){
+						
+							var fromResolve = $.parseJSON(fromResolve);
+							
+							var data = "";
+							for(var i = 0; i < fromResolve.length; i++ ) {
+								data += "<li class='list-group-item'>" + fromResolve[i] + "</li>";	
+							}
+		
+							self.list.html(data);
+							self.element.css('overflow','visible');
+							
+						}).catch(function(fromReject){
+							console.log(fromReject);
+						});
 					}
-
-					self.list.html(data);
-					self.element.css('overflow','visible');
-					
-				}).catch(function(fromReject){
-					console.log(fromReject);
 				});
-			}
-		});
-	};
-	
-	init.prototype.choose = function(){
-		var self = this;
+				
+				return self;
+			};
+		}
 		
-		$(document).delegate(this.choosen, 'click', function(e){
-			
-			var choosen = $(this).text();
-			
-			self.inputText.val(choosen);
-			
-			self.element.css('overflow','hidden');
-			
-			e.stopPropagation();
-		});
-
+		if( typeof this.hideList !== 'function' ){
+			init.prototype.hideList = function(){
+		
+				$(document).on('touchstart click', function (){
+					self.element.css('overflow','hidden');
+				});
+				
+				return self;
+			};
+		}
+		
+		if( typeof this.choose !== 'function' ){
+			init.prototype.choose = function(){
+				
+				$(document).delegate(this.choosen, 'click', function(e){
+					
+					var choosen = $(this).text();
+					
+					self.inputText.val(choosen);
+					
+					self.element.css('overflow','hidden');
+					
+					e.stopPropagation();
+				});
+				
+				return self;
+			};
+		}
 		
 	};
-	
-	init.prototype.hideList = function(){
-		var self = this;
 
-		$(document).on('touchstart click', function (){
-			self.element.css('overflow','hidden');
-		});
-	};
-	
 	window.ezAutoSuggestion = ezAutoSuggestion;
 	
 })(jQuery);
