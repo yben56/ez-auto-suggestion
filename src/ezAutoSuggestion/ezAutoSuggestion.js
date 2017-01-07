@@ -37,14 +37,29 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 	};
 	
 	init.prototype.getData = function(){
-		var self = this, inputData = "";
-		
-		this.inputText.on('keyup paste', function(){
+		var self		= this,
+			inputData	= "",
+			keyIndex	= 0,
+			upDown		= false,
+			valid		= false			
+		;
+
+		this.inputText.on('keyup paste', function(e){
+
 			if (!this.value) {
 				inputData = "";
 				self.element.css('overflow','hidden');
-			} else {
-				if (inputData != this.value) {
+			} else {	
+				if (
+					inputData != this.value && (
+						(e.keyCode > 47 && e.keyCode < 58)   || // number keys
+						(e.keyCode > 64 && e.keyCode < 91)   || // letter keys
+						(e.keyCode > 95 && e.keyCode < 112)  || // numpad keys
+						(e.keyCode > 185 && e.keyCode < 193) || // ;=,-./` (in order)
+						(e.keyCode > 218 && e.keyCode < 223) || // [\]' (in order)
+						e.keyCode == 8							// delete key
+					)
+				) {
 				
 					inputData = this.value;
 	
@@ -63,6 +78,43 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 					}).catch(function(fromReject){
 						console.log(fromReject);
 					});
+				} else {
+					if (e.keyCode == 13) {
+						self.element.css('overflow','hidden');
+						//can add post
+					} else {
+						var maxKeyIndex	= self.list.children().length - 1; //detect how many data send back
+						
+						self.element.css('overflow','visible');
+	
+						if (e.keyCode === 38) {
+							--keyIndex;
+							
+							if (keyIndex < 0) {
+								keyIndex = maxKeyIndex;	
+							}
+							
+							self.list.children().removeClass('hover');
+							$(self.list.children()[keyIndex]).addClass('hover');
+							
+							self.inputText.val( $(self.list.children()[keyIndex]).text() );
+							
+							upDown = true;
+						} else if(e.keyCode === 40) {
+							if (upDown == true) { ++keyIndex; }
+							
+							if (keyIndex > maxKeyIndex) {
+								keyIndex = 0;	
+							}
+							
+							self.list.children().removeClass('hover');
+							$(self.list.children()[keyIndex]).addClass('hover');
+							
+							self.inputText.val( $(self.list.children()[keyIndex]).text() );
+							
+							upDown = true;
+						}
+					}
 				}
 			}
 		});
