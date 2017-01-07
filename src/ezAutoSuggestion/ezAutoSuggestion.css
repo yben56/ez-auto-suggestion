@@ -28,6 +28,6 @@
 	cursor: default;
 }
 
-.ezAutoSuggestion .list-group-item:hover {
+.ezAutoSuggestion .list-group-item:hover, .ezAutoSuggestion .hover {
 	background-color: #e9e9e9;
 }
