@@ -22,7 +22,7 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 	var ezAutoSuggestion = function( selector, href ){
 		new init(selector, href).getData().choose().hideList();
 	};
-	
+		
 	var init = function( selector, href ){		
 		//property
 		this.element = $(selector);
@@ -43,80 +43,92 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 			upDown		= false,
 			valid		= false			
 		;
+		
+		var delay = (function(){
+			var timer = 0;
+			
+			return function(callback, ms){
+				clearTimeout (timer);
+				timer = setTimeout(callback, ms);
+			};
+		})();
 
 		this.inputText.on('keyup paste', function(e){
-
-			if (!this.value) {
-				inputData = "";
-				self.element.css('overflow','hidden');
-			} else {	
-				if (
-					inputData != this.value && (
-						(e.keyCode > 47 && e.keyCode < 58)   || // number keys
-						(e.keyCode > 64 && e.keyCode < 91)   || // letter keys
-						(e.keyCode > 95 && e.keyCode < 112)  || // numpad keys
-						(e.keyCode > 185 && e.keyCode < 193) || // ;=,-./` (in order)
-						(e.keyCode > 218 && e.keyCode < 223) || // [\]' (in order)
-						e.keyCode == 8							// delete key
-					)
-				) {
-				
-					inputData = this.value;
-	
-					$.post(self.href, { search: inputData } ).then(function(fromResolve){
-					
-						var fromResolve = $.parseJSON(fromResolve);
-						
-						var data = "";
-						for(var i = 0; i < fromResolve.length; i++ ) {
-							data += "<li class='list-group-item'>" + fromResolve[i] + "</li>";	
-						}
-	
-						self.list.html(data);
-						self.element.css('overflow','visible');
-						
-					}).catch(function(fromReject){
-						console.log(fromReject);
-					});
+			var thisValue = this.value.trim();
+			
+			delay(function(){
+				if (!thisValue) {
+					inputData = "";
+					self.element.css('overflow','hidden');
 				} else {
-					if (e.keyCode == 13) {
-						self.element.css('overflow','hidden');
-						//can add post
-					} else {
-						var maxKeyIndex	= self.list.children().length - 1; //detect how many data send back
+					if (
+						inputData != thisValue && (
+							(e.keyCode > 47 && e.keyCode < 58)   || // number keys
+							(e.keyCode > 64 && e.keyCode < 91)   || // letter keys
+							(e.keyCode > 95 && e.keyCode < 112)  || // numpad keys
+							(e.keyCode > 185 && e.keyCode < 193) || // ;=,-./` (in order)
+							(e.keyCode > 218 && e.keyCode < 223) || // [\]' (in order)
+							e.keyCode == 32						 || // speace key
+							e.keyCode == 8							// delete key
+						)
+					) {
+						inputData = thisValue;
+		
+						$.post(self.href, { search: inputData } ).then(function(fromResolve){
 						
-						self.element.css('overflow','visible');
-	
-						if (e.keyCode === 38) {
-							--keyIndex;
+							var fromResolve = $.parseJSON(fromResolve);
 							
-							if (keyIndex < 0) {
-								keyIndex = maxKeyIndex;	
+							var data = "";
+							for(var i = 0; i < fromResolve.length; i++ ) {
+								data += "<li class='list-group-item'>" + fromResolve[i] + "</li>";	
 							}
+		
+							self.list.html(data);
+							self.element.css('overflow','visible');
 							
-							self.list.children().removeClass('hover');
-							$(self.list.children()[keyIndex]).addClass('hover');
+						}).catch(function(fromReject){
+							console.log(fromReject);
+						});
+					} else {
+						if (e.keyCode == 13) {
+							self.element.css('overflow','hidden');
+							//can add post
+						} else {
+							var maxKeyIndex	= self.list.children().length - 1; //detect how many data send back
 							
-							self.inputText.val( $(self.list.children()[keyIndex]).text() );
-							
-							upDown = true;
-						} else if(e.keyCode === 40) {
-							if (upDown == true) { ++keyIndex; }
-							
-							if (keyIndex > maxKeyIndex) {
-								keyIndex = 0;	
+							self.element.css('overflow','visible');
+		
+							if (e.keyCode === 38) {
+								--keyIndex;
+								
+								if (keyIndex < 0) {
+									keyIndex = maxKeyIndex;	
+								}
+								
+								self.list.children().removeClass('hover');
+								$(self.list.children()[keyIndex]).addClass('hover');
+								
+								self.inputText.val( $(self.list.children()[keyIndex]).text() );
+								
+								upDown = true;
+							} else if(e.keyCode === 40) {
+								if (upDown == true) { ++keyIndex; }
+								
+								if (keyIndex > maxKeyIndex) {
+									keyIndex = 0;	
+								}
+								
+								self.list.children().removeClass('hover');
+								$(self.list.children()[keyIndex]).addClass('hover');
+								
+								self.inputText.val( $(self.list.children()[keyIndex]).text() );
+								
+								upDown = true;
 							}
-							
-							self.list.children().removeClass('hover');
-							$(self.list.children()[keyIndex]).addClass('hover');
-							
-							self.inputText.val( $(self.list.children()[keyIndex]).text() );
-							
-							upDown = true;
 						}
 					}
 				}
-			}
+			}, 150);
 		});
 		
 		return self;
